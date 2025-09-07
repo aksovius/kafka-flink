@@ -1,0 +1,30 @@
+{
+  "name": "clickhouse-sink-prepared-json",
+  "config": {
+    "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
+    "tasks.max": "2",
+
+    "topics": "prepared_data_json",
+    "topic2TableMap": "prepared_data_json=hades.prepared_data_json",
+
+    "hostname": "clickhouse",
+    "port": "8123",
+    "ssl": "false",
+    "database": "hades",
+    "username": "default",
+    "password": "",
+
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+
+    "consumer.override.auto.offset.reset": "earliest",
+    "consumer.override.max.poll.records": "5000",
+    "consumer.override.max.partition.fetch.bytes": "5242880",
+
+    "errors.tolerance": "all",
+    "errors.deadletterqueue.topic.name": "dlq-prepared-json",
+
+    "clickhouseSettings": "input_format_skip_unknown_fields=1,date_time_input_format=best_effort"
+  }
+}

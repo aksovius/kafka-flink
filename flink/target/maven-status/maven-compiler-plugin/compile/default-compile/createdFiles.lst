@@ -1,9 +1,11 @@
 com/visa/flink/dedup/deserialization/ConfluentAvroToMapDeserializationSchema$1.class
 com/visa/flink/utils/FlinkJobRunner.class
 com/visa/flink/dedup/DedupWithTTL$2.class
+com/visa/flink/serialization/JsonDeserializationSchema.class
 com/visa/flink/sink/ClickHouseDynamicSink3.class
 com/visa/flink/utils/DedupUtils.class
 com/visa/flink/utils/SchemaRegistrySubjectFetcher.class
+com/visa/flink/utils/SimpleKafkaJob.class
 com/visa/flink/model/Payload.class
 com/visa/flink/serialization/EventTimeKafkaSerializer.class
 com/visa/flink/utils/JobConfigLoader$1.class
