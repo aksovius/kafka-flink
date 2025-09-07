@@ -8,11 +8,10 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import com.visa.flink.model.ConsumerGenericRecord;
 import com.visa.flink.sink.KafkaSinkFactory;
 import com.visa.flink.dedup.DedupWithTTL;
-import com.visa.flink.dedup.deserialization.ConfluentAvroToMapDeserializationSchema;
+import com.visa.flink.serialization.JsonDeserializationSchema;
 import com.visa.flink.utils.AppLogger;
 import com.visa.flink.utils.JobConfigLoader;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.util.Collector;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 
 import java.util.Map;
@@ -22,9 +21,15 @@ public class FlinkConsumerUnionDedupTTLJob {
     public static void main(String[] args) {
         try {
             // Load job config
-            String jobJsonPath = args.length > 0 ? args[0] : "/data/hades-dedup/job.json";
-            AppLogger.info("msg", "json path is: {}, file path is: {}", jobJsonPath, jobJsonPath);
-            Map<String, Object> loadedConfig = JobConfigLoader.loadConfig(jobJsonPath);
+            Map<String, Object> loadedConfig;
+            if (args.length > 0) {
+                String jobJsonPath = args[0];
+                AppLogger.info("msg", "json path is: {}, file path is: {}", jobJsonPath, jobJsonPath);
+                loadedConfig = JobConfigLoader.loadConfig(jobJsonPath);
+            } else {
+                AppLogger.info("msg", "Using default configuration");
+                loadedConfig = createDefaultConfig();
+            }
 
             AppLogger.info("msg", "Starting FlinkConsumerUnionDedupTTLJob...");
 
@@ -42,8 +47,10 @@ public class FlinkConsumerUnionDedupTTLJob {
             env.getCheckpointConfig().setTolerableCheckpointFailureNumber(5);
 
             // -------- Create Kafka sources --------
+            @SuppressWarnings("unchecked")
             KafkaSource<ConsumerGenericRecord> sourceVDS_QA =
                     createKafkaSourceFromConfig((Map<String, Object>) loadedConfig.get("qa"));
+            @SuppressWarnings("unchecked")
             KafkaSource<ConsumerGenericRecord> sourceVDS_DEV =
                     createKafkaSourceFromConfig((Map<String, Object>) loadedConfig.get("dev"));
 
@@ -59,6 +66,7 @@ public class FlinkConsumerUnionDedupTTLJob {
             AppLogger.info("msg", "Union of the two streams...");
 
             // -------- Deduplicate with TTL --------
+            @SuppressWarnings("unchecked")
             long ttlMillis = Long.parseLong(((Map<String, Object>) loadedConfig.get("dedup"))
                     .get("ttl.ms").toString());
 
@@ -74,6 +82,7 @@ public class FlinkConsumerUnionDedupTTLJob {
 
             // -------- Write to Kafka sinks --------
             // JSON sink
+            @SuppressWarnings("unchecked")
             Map<String, Object> outKafkaJsonCfg = (Map<String, Object>) loadedConfig.get("kafka-sink-json");
             KafkaSink<ConsumerGenericRecord> kafkaJsonSink =
                     KafkaSinkFactory.buildJsonKeyValueSink(outKafkaJsonCfg);
@@ -85,6 +94,7 @@ public class FlinkConsumerUnionDedupTTLJob {
                     .uid("kafka-sink-json");
 
             // Avro sink
+            @SuppressWarnings("unchecked")
             Map<String, Object> outKafkaAvroCfg = (Map<String, Object>) loadedConfig.get("kafka-sink-avro");
             KafkaSink<ConsumerGenericRecord> kafkaAvroSink =
                     KafkaSinkFactory.buildAvroKeyValueSink(outKafkaAvroCfg);
@@ -116,31 +126,17 @@ public class FlinkConsumerUnionDedupTTLJob {
         String bootstrapServers = (String) config.get("bootstrap.servers");
         String topic = (String) config.get("topic");
         String groupId = (String) config.get("group.id");
-        String securityProtocol = (String) config.get("security.protocol");
-        String schemaRegistryUrl = (String) config.get("schema.registry.url");
         
         if (bootstrapServers == null || topic == null) {
             throw new IllegalArgumentException("bootstrap.servers and topic are required in config");
         }
-
-        // Создаем конфигурацию для Confluent Avro десериализатора
-        Map<String, Object> deserializerConfig = new java.util.HashMap<>();
-        deserializerConfig.put("bootstrap.servers", bootstrapServers);
-        deserializerConfig.put("group.id", groupId);
-        deserializerConfig.put("security.protocol", securityProtocol);
-        deserializerConfig.put("ssl.truststore.location", config.get("ssl.truststore.location"));
-        deserializerConfig.put("ssl.truststore.password", config.get("ssl.truststore.password"));
-        deserializerConfig.put("ssl.keystore.location", config.get("ssl.keystore.location"));
-        deserializerConfig.put("ssl.keystore.password", config.get("ssl.keystore.password"));
-        deserializerConfig.put("schema.registry.url", schemaRegistryUrl);
-        deserializerConfig.put("specific.avro.reader", config.get("specific.avro.reader"));
 
         return KafkaSource.<ConsumerGenericRecord>builder()
                 .setBootstrapServers(bootstrapServers)
                 .setTopics(topic)
                 .setGroupId(groupId)
                 .setStartingOffsets(OffsetsInitializer.latest())
-                .setDeserializer(new ConfluentAvroToMapDeserializationSchema(deserializerConfig))
+                .setDeserializer(new JsonDeserializationSchema())
                 .build();
     }
 
@@ -155,5 +151,62 @@ public class FlinkConsumerUnionDedupTTLJob {
     private static String stripPrefix(String key) {
         // TODO: implement prefix stripping logic if needed
         return key;
+    }
+
+    private static Map<String, Object> createDefaultConfig() {
+        Map<String, Object> config = new java.util.HashMap<>();
+        
+        // QA config
+        Map<String, Object> qaConfig = new java.util.HashMap<>();
+        qaConfig.put("bootstrap.servers", "kafka:29092");
+        qaConfig.put("topic", "test-topic-qa");
+        qaConfig.put("group.id", "flink-local-consumer-qa");
+        qaConfig.put("security.protocol", "PLAINTEXT");
+        config.put("qa", qaConfig);
+        
+        // Dev config
+        Map<String, Object> devConfig = new java.util.HashMap<>();
+        devConfig.put("bootstrap.servers", "kafka:29092");
+        devConfig.put("topic", "test-topic-dev");
+        devConfig.put("group.id", "flink-local-consumer-dev");
+        devConfig.put("security.protocol", "PLAINTEXT");
+        config.put("dev", devConfig);
+        
+        // JSON sink config
+        Map<String, Object> jsonSinkConfig = new java.util.HashMap<>();
+        jsonSinkConfig.put("bootstrap.servers", "kafka:29092");
+        jsonSinkConfig.put("topic", "prepared_data_json");
+        jsonSinkConfig.put("security.protocol", "PLAINTEXT");
+        jsonSinkConfig.put("transaction.timeout.ms", "300000");
+        config.put("kafka-sink-json", jsonSinkConfig);
+        
+        // Avro sink config
+        Map<String, Object> avroSinkConfig = new java.util.HashMap<>();
+        avroSinkConfig.put("bootstrap.servers", "kafka:29092");
+        avroSinkConfig.put("topic", "prepared_data_avro");
+        avroSinkConfig.put("security.protocol", "PLAINTEXT");
+        avroSinkConfig.put("schema.registry.url", "http://schema-registry:8081");
+        avroSinkConfig.put("value.subject", "prepared_data_avro-value");
+        avroSinkConfig.put("auto.register.schemas", "false");
+        avroSinkConfig.put("transaction.timeout.ms", "300000");
+        avroSinkConfig.put("value.avro.schema", "{\"type\":\"record\",\"name\":\"AuthEnrich\",\"namespace\":\"com.example.payments\",\"fields\":[{\"name\":\"authId\",\"type\":\"string\"},{\"name\":\"dc\",\"type\":\"string\"},{\"name\":\"eventTime\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"amount\",\"type\":\"double\"},{\"name\":\"currency\",\"type\":\"string\"},{\"name\":\"merchantId\",\"type\":\"string\"},{\"name\":\"country\",\"type\":\"string\"},{\"name\":\"status\",\"type\":\"string\"},{\"name\":\"riskScore\",\"type\":\"int\"},{\"name\":\"cardBin\",\"type\":\"string\"},{\"name\":\"deviceType\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
+        config.put("kafka-sink-avro", avroSinkConfig);
+        
+        // ClickHouse config (temporarily disabled)
+        Map<String, Object> clickhouseConfig = new java.util.HashMap<>();
+        clickhouseConfig.put("clickhouse.host", "jdbc:clickhouse://localhost:8123/hades");
+        clickhouseConfig.put("clickhouse.table", "auth_dedup");
+        clickhouseConfig.put("clickhouse.database", "hades");
+        clickhouseConfig.put("clickhouse.pool.size", "10");
+        clickhouseConfig.put("clickhouse.connection.timeout", "10000");
+        clickhouseConfig.put("clickhouse.socket.timeout", "30000");
+        config.put("clickhouse", clickhouseConfig);
+        
+        // Dedup config
+        Map<String, Object> dedupConfig = new java.util.HashMap<>();
+        dedupConfig.put("ttl.ms", "300000"); // 5 minutes
+        config.put("dedup", dedupConfig);
+        
+        return config;
     }
 }

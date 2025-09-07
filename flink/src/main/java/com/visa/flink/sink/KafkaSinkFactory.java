@@ -2,7 +2,6 @@ package com.visa.flink.sink;
 
 import com.visa.flink.model.ConsumerGenericRecord;
 import com.visa.flink.serialization.JsonMapValueSerializer;
-import com.visa.flink.serialization.EventTimeKafkaSerializer;
 import com.visa.flink.serialization.AvroValueSerializer;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaSink;
@@ -147,12 +146,4 @@ public final class KafkaSinkFactory {
         return o == null ? null : String.valueOf(o);
     }
 
-    private static String firstNonEmpty(String... vals) {
-        if (vals != null) {
-            for (String v : vals) {
-                if (v != null && !v.isEmpty()) return v;
-            }
-        }
-        return null;
-    }
 }

@@ -3,17 +3,13 @@
     "bootstrap.servers": "kafka:29092",
     "topic": "test-topic-qa",
     "group.id": "flink-local-consumer-qa",
-    "security.protocol": "PLAINTEXT",
-    "schema.registry.url": "http://schema-registry:8081",
-    "specific.avro.reader": "false"
+    "security.protocol": "PLAINTEXT"
   },
   "dev": {
     "bootstrap.servers": "kafka:29092",
     "topic": "test-topic-dev",
     "group.id": "flink-local-consumer-dev",
-    "security.protocol": "PLAINTEXT",
-    "schema.registry.url": "http://schema-registry:8081",
-    "specific.avro.reader": "false"
+    "security.protocol": "PLAINTEXT"
   },
   "kafka-sink-json": {
     "bootstrap.servers": "kafka:29092",

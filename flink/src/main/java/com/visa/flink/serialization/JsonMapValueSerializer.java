@@ -7,7 +7,6 @@ import com.visa.flink.model.ConsumerGenericRecord;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Base64;
@@ -21,7 +20,7 @@ public class JsonMapValueSerializer implements SerializationSchema<ConsumerGener
     private static final ObjectMapper MAPPER =
             new ObjectMapper().disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-    private static final Charset UTF8 = StandardCharsets.UTF_8;
+    private static final java.nio.charset.Charset UTF8 = StandardCharsets.UTF_8;
 
     @Override
     public byte[] serialize(ConsumerGenericRecord element) {

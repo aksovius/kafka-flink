@@ -46,12 +46,6 @@
             <version>3.0.1-1.17</version>
         </dependency>
 
-        <!-- Apache Flink JSON -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-json</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
 
         <!-- Apache Kafka -->
         <dependency>
@@ -74,12 +68,6 @@
             <version>${confluent.version}</version>
         </dependency>
 
-        <!-- ClickHouse JDBC (if needed) -->
-        <dependency>
-            <groupId>com.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <version>0.4.6</version>
-        </dependency>
 
         <!-- Logging -->
         <dependency>

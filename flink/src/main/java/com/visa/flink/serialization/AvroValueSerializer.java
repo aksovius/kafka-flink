@@ -9,8 +9,6 @@ import org.apache.flink.api.common.serialization.SerializationSchema;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -28,13 +26,10 @@ import java.util.*;
  *  - auto.register.schemas      (optional; "false" by default)
  *  - value.subject.name.strategy (optional; passed through if needed)
  */
-public class AvroValueSerializer implements SerializationSchema<ConsumerGenericRecord>, Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class AvroValueSerializer implements SerializationSchema<ConsumerGenericRecord> {
 
     private final Map<String, Object> cfg;
     private final String topic;
-    private final String subject; // e.g. <topic>-value
 
     // Lazy / runtime-only
     private transient KafkaAvroSerializer serializer;
@@ -43,8 +38,6 @@ public class AvroValueSerializer implements SerializationSchema<ConsumerGenericR
     public AvroValueSerializer(Map<String, Object> cfg, String topic, String subjectOverride) {
         this.cfg = cfg;
         this.topic = topic;
-        String def = topic == null ? null : topic + "-value";
-        this.subject = subjectOverride != null && !subjectOverride.isBlank() ? subjectOverride : def;
     }
 
     @Override
@@ -62,7 +55,6 @@ public class AvroValueSerializer implements SerializationSchema<ConsumerGenericR
 
     // ---------------- init & helpers ----------------
 
-    @SuppressWarnings("unchecked")
     private void ensureInit() {
         if (serializer == null) {
             serializer = new KafkaAvroSerializer();
