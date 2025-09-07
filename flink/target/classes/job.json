@@ -1,0 +1,45 @@
+{
+  "qa": {
+    "bootstrap.servers": "s17...visa.com:9092",
+    "topic": "auth_dsdauthenEnrich",
+    "group.id": "flink-qa-consumer",
+    "security.protocol": "SSL",
+    "ssl.truststore.location": "/data/kafka/registry/truststore.jks",
+    "ssl.truststore.password": "xxxx",
+    "ssl.keystore.location": "/data/kafka/registry/keystore.jks",
+    "ssl.keystore.password": "xxxx",
+    "schema.registry.url": "https://schema-registry:8081",
+    "specific.avro.reader": "false"
+  },
+  "dev": {
+    "bootstrap.servers": "s17...visa.com:9092",
+    "topic": "auth_dsdauthenEnrich",
+    "group.id": "flink-dev-consumer",
+    "security.protocol": "SSL",
+    "ssl.truststore.location": "/data/kafka/registry/truststore.jks",
+    "ssl.truststore.password": "xxxx",
+    "ssl.keystore.location": "/data/kafka/registry/keystore.jks",
+    "ssl.keystore.password": "xxxx",
+    "schema.registry.url": "https://schema-registry:8081",
+    "specific.avro.reader": "false"
+  },
+  "kafka-sink": {
+    "bootstrap.servers": "s17...visa.com:9092",
+    "topic": "Flink_Splunk_Test",
+    "security.protocol": "PLAINTEXT",
+    "transaction.timeout.ms": "300000"
+  },
+  "clickhouse": {
+    "clickhouse.host": "jdbc:clickhouse://10.160.44.230:8123/hades",
+    "clickhouse.table": "auth_dedup",
+    "clickhouse.database": "hades",
+    "clickhouse.pool.size": "10",
+    "clickhouse.batch.size": "1000",
+    "clickhouse.flush.interval.ms": "1000",
+    "clickhouse.max.retries": "3",
+    "clickhouse.base.delay.ms": "1000"
+  },
+  "dedup": {
+    "ttl.ms": "300000"
+  }
+}

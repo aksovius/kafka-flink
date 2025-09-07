@@ -1,0 +1,17 @@
+2025-09-07 11:35:41.389 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.463 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.503 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.503 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.517 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.518 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.518 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.547 [main] INFO  com.visa.flink.utils.AppLogger - msg
+2025-09-07 11:35:41.568 [main] ERROR com.visa.flink.utils.AppLogger - msg
+java.lang.IllegalStateException: No ExecutorFactory found to execute the application.
+	at org.apache.flink.core.execution.DefaultExecutorServiceLoader.getExecutorFactory(DefaultExecutorServiceLoader.java:88)
+	at org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.getPipelineExecutor(StreamExecutionEnvironment.java:2717)
+	at org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.executeAsync(StreamExecutionEnvironment.java:2194)
+	at org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.execute(StreamExecutionEnvironment.java:2084)
+	at org.apache.flink.streaming.api.environment.LocalStreamEnvironment.execute(LocalStreamEnvironment.java:68)
+	at org.apache.flink.streaming.api.environment.StreamExecutionEnvironment.execute(StreamExecutionEnvironment.java:2058)
+	at com.visa.flink.utils.FlinkConsumerUnionDedupTTLJob.main(FlinkConsumerUnionDedupTTLJob.java:88)

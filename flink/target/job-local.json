@@ -1,0 +1,47 @@
+{
+  "qa": {
+    "bootstrap.servers": "kafka:29092",
+    "topic": "test-topic-qa",
+    "group.id": "flink-local-consumer-qa",
+    "security.protocol": "PLAINTEXT",
+    "schema.registry.url": "http://schema-registry:8081",
+    "specific.avro.reader": "false"
+  },
+  "dev": {
+    "bootstrap.servers": "kafka:29092",
+    "topic": "test-topic-dev",
+    "group.id": "flink-local-consumer-dev",
+    "security.protocol": "PLAINTEXT",
+    "schema.registry.url": "http://schema-registry:8081",
+    "specific.avro.reader": "false"
+  },
+  "kafka-sink-json": {
+    "bootstrap.servers": "kafka:29092",
+    "topic": "prepared_data_json",
+    "security.protocol": "PLAINTEXT",
+    "transaction.timeout.ms": "300000"
+  },
+  "kafka-sink-avro": {
+    "bootstrap.servers": "kafka:29092",
+    "topic": "prepared_data_avro",
+    "security.protocol": "PLAINTEXT",
+    "schema.registry.url": "http://schema-registry:8081",
+    "value.subject": "prepared_data_avro-value",
+    "auto.register.schemas": "false",
+    "transaction.timeout.ms": "300000",
+    "value.avro.schema": "{\"type\":\"record\",\"name\":\"AuthEnrich\",\"namespace\":\"com.example.payments\",\"fields\":[{\"name\":\"authId\",\"type\":\"string\"},{\"name\":\"dc\",\"type\":\"string\"},{\"name\":\"eventTime\",\"type\":{\"type\":\"long\",\"logicalType\":\"timestamp-millis\"}},{\"name\":\"amount\",\"type\":\"double\"},{\"name\":\"currency\",\"type\":\"string\"},{\"name\":\"merchantId\",\"type\":\"string\"},{\"name\":\"country\",\"type\":\"string\"},{\"name\":\"status\",\"type\":\"string\"},{\"name\":\"riskScore\",\"type\":\"int\"},{\"name\":\"cardBin\",\"type\":\"string\"},{\"name\":\"deviceType\",\"type\":[\"null\",\"string\"],\"default\":null}]}"
+  },
+  "clickhouse": {
+    "clickhouse.host": "jdbc:clickhouse://clickhouse:8123/hades",
+    "clickhouse.table": "auth_dedup",
+    "clickhouse.database": "hades",
+    "clickhouse.pool.size": "10",
+    "clickhouse.batch.size": "1000",
+    "clickhouse.flush.interval.ms": "1000",
+    "clickhouse.max.retries": "3",
+    "clickhouse.base.delay.ms": "1000"
+  },
+  "dedup": {
+    "ttl.ms": "300000"
+  }
+}

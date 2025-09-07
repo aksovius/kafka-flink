@@ -1,0 +1,37 @@
+{
+  "qa": {
+    "bootstrap.servers": "localhost:9092",
+    "topic": "test-qa-topic",
+    "group.id": "flink-dev-consumer-qa",
+    "security.protocol": "PLAINTEXT",
+    "schema.registry.url": "http://localhost:8081",
+    "specific.avro.reader": "false"
+  },
+  "dev": {
+    "bootstrap.servers": "localhost:9092",
+    "topic": "test-dev-topic",
+    "group.id": "flink-dev-consumer-dev",
+    "security.protocol": "PLAINTEXT",
+    "schema.registry.url": "http://localhost:8081",
+    "specific.avro.reader": "false"
+  },
+  "kafka-sink": {
+    "bootstrap.servers": "localhost:9092",
+    "topic": "flink-dedup-output",
+    "security.protocol": "PLAINTEXT",
+    "transaction.timeout.ms": "300000"
+  },
+  "clickhouse": {
+    "clickhouse.host": "jdbc:clickhouse://localhost:8123/test",
+    "clickhouse.table": "auth_dedup",
+    "clickhouse.database": "test",
+    "clickhouse.pool.size": "5",
+    "clickhouse.batch.size": "100",
+    "clickhouse.flush.interval.ms": "1000",
+    "clickhouse.max.retries": "3",
+    "clickhouse.base.delay.ms": "1000"
+  },
+  "dedup": {
+    "ttl.ms": "60000"
+  }
+}

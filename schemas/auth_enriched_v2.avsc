@@ -1,0 +1,16 @@
+{
+  "type":"record","name":"AuthEnrich","namespace":"com.example.payments",
+  "fields":[
+    {"name":"authId","type":"string"},
+    {"name":"dc","type":"string"},
+    {"name":"eventTime","type":{"type":"long","logicalType":"timestamp-millis"}},
+    {"name":"amount","type":"double"},
+    {"name":"currency","type":"string"},
+    {"name":"merchantId","type":"string"},
+    {"name":"country","type":"string"},
+    {"name":"status","type":"string"},
+    {"name":"riskScore","type":"int"},
+    {"name":"cardBin","type":"string"},
+    {"name":"deviceType","type":["null","string"],"default":null}
+  ]
+}
